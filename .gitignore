@@ -1,0 +1,12 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# Runtime data
+audio/
+data/
+docker/
+
+# Secrets
+.env

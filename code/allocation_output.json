@@ -1,0 +1,98 @@
+{
+  "equal_split": [
+    {
+      "record_date": "2026-01-30",
+      "cloud_provider": "aws",
+      "service_name": "EKS",
+      "shared_service_type": "k8s",
+      "customer_id": "Customer_A",
+      "allocation_method": "equal",
+      "allocated_cost": 100.0,
+      "processed_at": "2026-01-30T14:17:29.827955Z"
+    },
+    {
+      "record_date": "2026-01-30",
+      "cloud_provider": "aws",
+      "service_name": "EKS",
+      "shared_service_type": "k8s",
+      "customer_id": "Customer_B",
+      "allocation_method": "equal",
+      "allocated_cost": 100.0,
+      "processed_at": "2026-01-30T14:17:29.827969Z"
+    },
+    {
+      "record_date": "2026-01-30",
+      "cloud_provider": "aws",
+      "service_name": "EKS",
+      "shared_service_type": "k8s",
+      "customer_id": "Customer_C",
+      "allocation_method": "equal",
+      "allocated_cost": 100.0,
+      "processed_at": "2026-01-30T14:17:29.827974Z"
+    }
+  ],
+  "weighted_split": [
+    {
+      "record_date": "2026-01-30",
+      "cloud_provider": "aws",
+      "service_name": "EKS",
+      "shared_service_type": "k8s",
+      "customer_id": "Customer_A",
+      "allocation_method": "weighted",
+      "allocated_cost": 150.0,
+      "processed_at": "2026-01-30T14:17:29.827998Z"
+    },
+    {
+      "record_date": "2026-01-30",
+      "cloud_provider": "aws",
+      "service_name": "EKS",
+      "shared_service_type": "k8s",
+      "customer_id": "Customer_B",
+      "allocation_method": "weighted",
+      "allocated_cost": 90.0,
+      "processed_at": "2026-01-30T14:17:29.828003Z"
+    },
+    {
+      "record_date": "2026-01-30",
+      "cloud_provider": "aws",
+      "service_name": "EKS",
+      "shared_service_type": "k8s",
+      "customer_id": "Customer_C",
+      "allocation_method": "weighted",
+      "allocated_cost": 60.0,
+      "processed_at": "2026-01-30T14:17:29.828008Z"
+    }
+  ],
+  "usage_based_split": [
+    {
+      "record_date": "2026-01-30",
+      "cloud_provider": "aws",
+      "service_name": "EKS",
+      "shared_service_type": "k8s",
+      "customer_id": "Customer_A",
+      "allocation_method": "usage",
+      "allocated_cost": 150.0,
+      "processed_at": "2026-01-30T14:17:29.828020Z"
+    },
+    {
+      "record_date": "2026-01-30",
+      "cloud_provider": "aws",
+      "service_name": "EKS",
+      "shared_service_type": "k8s",
+      "customer_id": "Customer_B",
+      "allocation_method": "usage",
+      "allocated_cost": 100.0,
+      "processed_at": "2026-01-30T14:17:29.828025Z"
+    },
+    {
+      "record_date": "2026-01-30",
+      "cloud_provider": "aws",
+      "service_name": "EKS",
+      "shared_service_type": "k8s",
+      "customer_id": "Customer_C",
+      "allocation_method": "usage",
+      "allocated_cost": 50.0,
+      "processed_at": "2026-01-30T14:17:29.828029Z"
+    }
+  ]
+}

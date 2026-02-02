@@ -1,0 +1,79 @@
+{
+  "generated_at": "2026-01-30T12:50:51.042792Z",
+  "total_records": 270,
+  "anomaly_count": 8,
+  "anomalies": [
+    {
+      "customer": "Customer_A",
+      "cloud": "AWS",
+      "observed_cost": 458.51,
+      "expected_range": "64.35\u2013228.6",
+      "severity": "HIGH",
+      "detected_at": "2026-01-30T12:50:51.039483Z",
+      "finops_reasoning": "Cost significantly exceeded historical baseline. Likely causes include noisy neighbor effect, misconfigured autoscaling, or unexpected workload spike."
+    },
+    {
+      "customer": "Customer_A",
+      "cloud": "Azure",
+      "observed_cost": 425.47,
+      "expected_range": "53.91\u2013224.25",
+      "severity": "HIGH",
+      "detected_at": "2026-01-30T12:50:51.040312Z",
+      "finops_reasoning": "Cost significantly exceeded historical baseline. Likely causes include noisy neighbor effect, misconfigured autoscaling, or unexpected workload spike."
+    },
+    {
+      "customer": "Customer_A",
+      "cloud": "Azure",
+      "observed_cost": 471.5,
+      "expected_range": "53.91\u2013224.25",
+      "severity": "HIGH",
+      "detected_at": "2026-01-30T12:50:51.040327Z",
+      "finops_reasoning": "Cost significantly exceeded historical baseline. Likely causes include noisy neighbor effect, misconfigured autoscaling, or unexpected workload spike."
+    },
+    {
+      "customer": "Customer_B",
+      "cloud": "AWS",
+      "observed_cost": 402.97,
+      "expected_range": "49.35\u2013183.13",
+      "severity": "HIGH",
+      "detected_at": "2026-01-30T12:50:51.040763Z",
+      "finops_reasoning": "Cost significantly exceeded historical baseline. Likely causes include noisy neighbor effect, misconfigured autoscaling, or unexpected workload spike."
+    },
+    {
+      "customer": "Customer_B",
+      "cloud": "Azure",
+      "observed_cost": 301.89,
+      "expected_range": "51.55\u2013173.46",
+      "severity": "HIGH",
+      "detected_at": "2026-01-30T12:50:51.041549Z",
+      "finops_reasoning": "Cost significantly exceeded historical baseline. Likely causes include noisy neighbor effect, misconfigured autoscaling, or unexpected workload spike."
+    },
+    {
+      "customer": "Customer_B",
+      "cloud": "Azure",
+      "observed_cost": 360.28,
+      "expected_range": "51.55\u2013173.46",
+      "severity": "HIGH",
+      "detected_at": "2026-01-30T12:50:51.041562Z",
+      "finops_reasoning": "Cost significantly exceeded historical baseline. Likely causes include noisy neighbor effect, misconfigured autoscaling, or unexpected workload spike."
+    },
+    {
+      "customer": "Customer_C",
+      "cloud": "AWS",
+      "observed_cost": 293.4,
+      "expected_range": "43.89\u2013147.8",
+      "severity": "HIGH",
+      "detected_at": "2026-01-30T12:50:51.041985Z",
+      "finops_reasoning": "Cost significantly exceeded historical baseline. Likely causes include noisy neighbor effect, misconfigured autoscaling, or unexpected workload spike."
+    },
+    {
+      "customer": "Customer_C",
+      "cloud": "GCP",
+      "observed_cost": 339.56,
+      "expected_range": "39.44\u2013156.34",
+      "severity": "HIGH",
+      "detected_at": "2026-01-30T12:50:51.042402Z",
+      "finops_reasoning": "Cost significantly exceeded historical baseline. Likely causes include noisy neighbor effect, misconfigured autoscaling, or unexpected workload spike."
+    }
+  ]
+}
