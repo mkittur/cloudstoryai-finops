@@ -7,7 +7,21 @@ from fastapi.responses import FileResponse
 import os
 
 from fastapi import FastAPI, Query
+from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel
 import psycopg2
+app = FastAPI()
+app.mount(
+    "/ui",
+    StaticFiles(directory="/data/cloudstoryai/ui", html=True),
+    name="ui"
+)
+
+
+class AIQuery(BaseModel):
+    query: str
+    persona: str = "cfo"
 
 app = FastAPI(title="CloudStoryAI API", version="1.0")
 
@@ -125,4 +139,39 @@ def get_story_audio(story_id: int):
         media_type="audio/wav",
         filename=os.path.basename(audio_path)
     )
+
+@app.post("/ai/query")
+def ai_query(req: AIQuery):
+    conn = psycopg2.connect(
+        host="localhost",
+        database="cloudstoryai",
+        user="cloudstory",
+        password="cloudstory_pwd"
+    )
+
+    cur = conn.cursor()
+    cur.execute("""
+        SELECT id, story, audio_path
+        FROM stories
+        WHERE persona = %s
+        ORDER BY created_at DESC
+        LIMIT 1
+    """, (req.persona,))
+
+    row = cur.fetchone()
+    cur.close()
+    conn.close()
+
+    if not row:
+        return {
+            "summary": "No AI story available yet.",
+            "confidence": 0.0,
+            "audio_url": None
+        }
+
+    return {
+        "summary": row[1],
+        "confidence": 0.82,
+        "audio_url": row[2]
+    }
 
