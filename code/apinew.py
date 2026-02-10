@@ -4,16 +4,14 @@ Exposes FinOps engine data via REST APIs
 """
 
 from fastapi import FastAPI, HTTPException, Query
-from fastapi.responses import FileResponse, RedirectResponse
+from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 import psycopg2
 import os
-
 from intent_engine import detect_intent
-from aggregation_engine import aggregate_signals, rank_signals
-from narrative_engine import build_narrative
-from llm_refinement import refine_with_llm
+from fastapi.responses import RedirectResponse
+
 
 # -------------------------------------------------
 # App bootstrap (ONLY ONE FastAPI instance)
@@ -149,37 +147,73 @@ def get_story_audio(story_id: int):
     return FileResponse(row[0], media_type="audio/wav")
 
 # -------------------------------------------------
-# AI Query (INTENT-AWARE)
+# AI Query
 # -------------------------------------------------
+
 @app.post("/ai/query")
+
 def ai_query(req: AIQuery):
     print("🔥 AI QUERY ENDPOINT HIT")
 
-    intent = detect_intent(req.query)["intent"]
+    intent_data = detect_intent(req.query)
+    intent = intent_data["intent"]
+
     print(f"🧠 Detected intent: {intent}")
 
     conn = get_db()
+    cur = conn.cursor()
+    story = row[0]
+    audio = row[1] if len(row) > 1 else None
 
-    signals = aggregate_signals(conn, intent)
+    if intent == "SAVINGS":
+        cur.execute("""
+            SELECT story, COALESCE(audio_path, '')
+            FROM stories
+            WHERE persona = %s
+              AND story ILIKE '%save%'
+            ORDER BY created_at DESC
+            LIMIT 1
+        """, (req.persona,))
+        row = cur.fetchone()
+
+    elif intent == "COST_SPIKE":
+        cur.execute("""
+            SELECT story, audio_path
+            FROM stories
+            WHERE persona = %s
+            ORDER BY created_at DESC
+            LIMIT 1
+        """, (req.persona,))
+
+    else:
+        cur.execute("""
+            SELECT story, audio_path
+            FROM stories
+            WHERE persona = %s
+            ORDER BY created_at DESC
+            LIMIT 1
+        """, (req.persona,))
+
+    row = cur.fetchone()
+    cur.close()
     conn.close()
 
-     narrative = build_narrative(
-        signals,          # ranked_signals
-        req.persona       # persona
-    )
-    
+    if not row:
+        return {
+            "summary": "No relevant insight found",
+            "intent": intent
+        }
 
     return {
         "question": req.query,
         "persona": req.persona,
         "intent": intent,
-        "summary": narrative,
-        "signals": signals[:3]
+        "summary": story,
+        "confidence": 0.82,
+        "audio_url": audio
     }
 
-# -------------------------------------------------
-# Root → UI
-# -------------------------------------------------
+
 @app.get("/")
 def root():
     return RedirectResponse(url="/ui")

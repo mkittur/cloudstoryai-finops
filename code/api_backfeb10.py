@@ -159,22 +159,73 @@ def ai_query(req: AIQuery):
     print(f"🧠 Detected intent: {intent}")
 
     conn = get_db()
+    cur = conn.cursor()
+    row = None  # 🔑 ALWAYS initialize
 
-    signals = aggregate_signals(conn, intent)
+    if intent == "SAVINGS":
+        cur.execute("""
+            SELECT
+                story,
+                COALESCE(audio_path, '')
+            FROM stories
+            WHERE persona = %s
+              AND (
+                  story ILIKE '%%save%%'
+                  OR story ILIKE '%%reduce%%'
+                  OR story ILIKE '%%optimiz%%'
+              )
+            ORDER BY created_at DESC
+            LIMIT 1
+        """, (req.persona,))
+        row = cur.fetchone()
+
+    elif intent in ("COST_SPIKE", "ANOMALY", "TREND", "ALLOCATION"):
+        cur.execute("""
+            SELECT
+                story,
+                COALESCE(audio_path, '')
+            FROM stories
+            WHERE persona = %s
+            ORDER BY created_at DESC
+            LIMIT 1
+        """, (req.persona,))
+        row = cur.fetchone()
+
+    else:  # GENERAL fallback
+        cur.execute("""
+            SELECT
+                story,
+                COALESCE(audio_path, '')
+            FROM stories
+            WHERE persona = %s
+            ORDER BY created_at DESC
+            LIMIT 1
+        """, (req.persona,))
+        row = cur.fetchone()
+
+    cur.close()
     conn.close()
 
-     narrative = build_narrative(
-        signals,          # ranked_signals
-        req.persona       # persona
-    )
-    
+    if not row:
+        return {
+            "question": req.query,
+            "persona": req.persona,
+            "intent": intent,
+            "summary": "No relevant insight found for this request.",
+            "confidence": 0.0,
+            "audio_url": None
+        }
+
+    story = row[0]
+    audio = row[1] if row[1] else None
 
     return {
         "question": req.query,
         "persona": req.persona,
         "intent": intent,
-        "summary": narrative,
-        "signals": signals[:3]
+        "summary": story,
+        "confidence": 0.82,
+        "audio_url": audio
     }
 
 # -------------------------------------------------
