@@ -12,7 +12,7 @@ import psycopg2
 from intent_engine import detect_intent
 from aggregation_engine import aggregate_signals, rank_signals
 from narrative_engine import build_deterministic_narrative
-from llm_engine import refine_with_llm   # make sure this file exists
+from llm_engine import refine_with_llm
 
 
 # -------------------------------------------------
@@ -49,6 +49,45 @@ def get_db():
 
 
 # -------------------------------------------------
+# 🆕 FinOps Daily Cost Endpoint
+# -------------------------------------------------
+@app.get("/finops/daily-cost")
+def daily_cost():
+
+    try:
+        conn = get_db()
+        cur = conn.cursor()
+
+        # If you created materialized view mv_daily_cost
+        cur.execute("""
+            SELECT record_date,
+                   SUM(cost_amount) AS total_cost,
+                   COUNT(DISTINCT service_name) AS services
+            FROM raw_cost
+            GROUP BY record_date
+            ORDER BY record_date;
+        """)
+
+        rows = cur.fetchall()
+
+        cur.close()
+        conn.close()
+
+        return [
+            {
+                "date": str(r[0]),
+                "total_cost": float(r[1]) if r[1] else 0.0,
+                "services": r[2]
+            }
+            for r in rows
+        ]
+
+    except Exception as e:
+        print("❌ DAILY COST ERROR:", str(e))
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# -------------------------------------------------
 # AI Query Endpoint
 # -------------------------------------------------
 @app.post("/ai/query")
@@ -57,17 +96,12 @@ def ai_query(req: AIQuery):
     print("🔥 AI QUERY ENDPOINT HIT")
 
     try:
-        # 1️⃣ Detect intent
         intent = detect_intent(req.query)["intent"]
         print(f"🧠 Detected intent: {intent}")
 
-        # 2️⃣ DB connection
         conn = get_db()
-
-        # 3️⃣ Aggregate signals
         signals = aggregate_signals(conn, intent)
 
-        # 4️⃣ Rank signals (FIXED: pass persona)
         ranked_signals = (
             rank_signals(signals, req.persona)
             if signals else []
@@ -77,7 +111,6 @@ def ai_query(req: AIQuery):
 
         print("📊 SIGNALS RETURNED:", ranked_signals)
 
-        # 5️⃣ Deterministic narrative
         deterministic_story = build_deterministic_narrative(
             ranked_signals,
             req.persona
@@ -85,7 +118,6 @@ def ai_query(req: AIQuery):
 
         final_story = deterministic_story
 
-        # 6️⃣ LLM refinement (optional)
         if ranked_signals:
             top = ranked_signals[0]
 
@@ -124,6 +156,38 @@ Be concise but executive-ready.
 
     except Exception as e:
         print("❌ ERROR:", str(e))
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/finops/cloud-summary")
+def cloud_summary():
+    try:
+        conn = get_db()
+        cur = conn.cursor()
+
+        cur.execute("""
+            SELECT cloud_provider, SUM(cost_amount)
+            FROM raw_cost
+            GROUP BY cloud_provider;
+        """)
+
+        rows = cur.fetchall()
+        cur.close()
+        conn.close()
+
+        summary = {
+            "aws": 0.0,
+            "azure": 0.0,
+            "gcp": 0.0
+        }
+
+        for provider, cost in rows:
+            key = provider.lower()
+            if key in summary:
+                summary[key] = float(cost)
+
+        return summary
+
+    except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
