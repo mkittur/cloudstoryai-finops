@@ -9,4 +9,19 @@ data/
 docker/
 
 # Secrets
+.envi
+
+# Secrets
 .env
+keys/
+*.pem
+*.key
+*.json
+
+# Cloud credentials
+aws_credentials
+azure_credentials
+gcp_credentials
+
+# Python env files
+.env.*
