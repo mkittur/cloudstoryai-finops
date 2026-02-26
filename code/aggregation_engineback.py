@@ -123,3 +123,4 @@ def rank_signals(signals, persona):
         ranked.append({**s, "score": round(score, 2)})
 
     return sorted(ranked, key=lambda x: x["score"], reverse=True)
+
